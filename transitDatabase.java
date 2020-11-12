@@ -14,7 +14,6 @@ public class transitDatabase {
 	private static final String PASSWORD = "randompassword";
 	private static Scanner kb;
 	private static Connection myConn;
-	
 	public static void main(String[] args) throws SQLException {
 		
 		displayCmds();
@@ -139,7 +138,7 @@ public class transitDatabase {
 //			System.out.println(queryString);
 			ResultSet rs = stmt.executeQuery(queryString);
 			while (!rs.next()) {
-			// If get here, there is duplicate //data
+			// If get here, there is no data
 				System.out.println("Data does not exist. No changes made");    
 			rs.close();	
 			stmt.close();
@@ -161,50 +160,55 @@ public class transitDatabase {
 		}
 	}
 	static void addTrip() {
-		
-		System.out.print("Insert TripNumber: ");
-		String TripNumber = kb.nextLine();
-		System.out.print("Insert Date: ");
-		String Date = kb.nextLine();
-		System.out.print("Insert ScheduledStartTime: ");
-		String ScheduledStartTime = kb.nextLine();
-		System.out.print("Insert ScheduledArrivalTime: ");
-		String ScheduledArrivalTime = kb.nextLine();
-		System.out.print("Insert DriverName: ");
-		String DriverName = kb.nextLine();
-		System.out.print("Insert BusID: ");
-		String BusID = kb.nextLine();
-		
-		try {
-	
-			Statement stmt = myConn.createStatement();
-			String queryString = "SELECT TripNumber, Date, ScheduledStartTime " +
-								 "FROM TripOffering " +
-								 "WHERE TripNumber = \'" + TripNumber + "\' AND Date = \'" + Date + "\' AND ScheduledStartTime = \'" + ScheduledStartTime + "\';";
-//			System.out.println(queryString);
-			ResultSet rs = stmt.executeQuery(queryString);
-			while (rs.next()) {
-			// If get here, there is duplicate //data
-				System.out.println("Duplicate Data. No changes made");    
-			rs.close();	
-			stmt.close();
-			return;
-			}	 
-			// OK to insert new data
-			String insertString ="INSERT INTO `tripoffering` (TripNumber, Date, ScheduledStartTime, ScheduledArrivalTime, DriverName, BusID) " + 
-			"VALUES (\'" + TripNumber + "\', \'" + Date + "\', \'" + ScheduledStartTime + "\', \'" +  ScheduledArrivalTime + "\', \'" + 
-			 DriverName + "\', \'" +  BusID + "\');";
-//			System.out.println(insertString);
-			int result = stmt.executeUpdate(insertString) ; 
-			if (result == 0)
-				System.out.println("Problem with insert") ;
+		String input = "";
+		do {
+			System.out.print("Insert TripNumber: ");
+			String TripNumber = kb.nextLine();
+			System.out.print("Insert Date: ");
+			String Date = kb.nextLine();
+			System.out.print("Insert ScheduledStartTime: ");
+			String ScheduledStartTime = kb.nextLine();
+			System.out.print("Insert ScheduledArrivalTime: ");
+			String ScheduledArrivalTime = kb.nextLine();
+			System.out.print("Insert DriverName: ");
+			String DriverName = kb.nextLine();
+			System.out.print("Insert BusID: ");
+			String BusID = kb.nextLine();
 			
-			rs.close ();
-			stmt.close ();
+			try {
 		
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+				Statement stmt = myConn.createStatement();
+				String queryString = "SELECT TripNumber, Date, ScheduledStartTime " +
+									 "FROM TripOffering " +
+									 "WHERE TripNumber = \'" + TripNumber + "\' AND Date = \'" + Date + "\' AND ScheduledStartTime = \'" + ScheduledStartTime + "\';";
+//				System.out.println(queryString);
+				ResultSet rs = stmt.executeQuery(queryString);
+				while (rs.next()) {
+				// If get here, there is duplicate //data
+					System.out.println("Duplicate Data. No changes made");    
+				rs.close();	
+				stmt.close();
+				return;
+				}	 
+				// OK to insert new data
+				String insertString ="INSERT INTO `tripoffering` (TripNumber, Date, ScheduledStartTime, ScheduledArrivalTime, DriverName, BusID) " + 
+				"VALUES (\'" + TripNumber + "\', \'" + Date + "\', \'" + ScheduledStartTime + "\', \'" +  ScheduledArrivalTime + "\', \'" + 
+				 DriverName + "\', \'" +  BusID + "\');";
+//				System.out.println(insertString);
+				int result = stmt.executeUpdate(insertString) ; 
+				if (result == 0)
+					System.out.println("Problem with insert") ;
+				
+				rs.close ();
+				stmt.close ();
+				
+				System.out.print("Add more trips? (Yes/No): ");
+				input = kb.nextLine();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} while(input.equalsIgnoreCase("yes"));
+	
 		
 	}
 	static void changeDriver() {
@@ -226,7 +230,7 @@ public class transitDatabase {
 			System.out.println(queryString);
 			ResultSet rs = stmt.executeQuery(queryString);
 			while (!rs.next()) {
-			// If get here, there is duplicate //data
+			// If get here, there is no data
 				System.out.println("Data does not exist. No changes made");    
 			rs.close();	
 			stmt.close();
@@ -266,7 +270,7 @@ public class transitDatabase {
 //			System.out.println(queryString);
 			ResultSet rs = stmt.executeQuery(queryString);
 			while (!rs.next()) {
-			// If get here, there is duplicate //data
+			// If get here, there is no data
 				System.out.println("Data does not exist. No changes made");    
 			rs.close();	
 			stmt.close();
@@ -333,6 +337,46 @@ public class transitDatabase {
 		String DriverName = kb.nextLine();
 		System.out.print("Insert Date: ");
 		String Date = kb.nextLine();
+		
+		String[] token = Date.split("/");
+		int day = Integer.parseInt(token[1]) + 6;
+		token[1] = Integer.toString(day);
+		String endOfWeek = String.join("/", token);
+//		System.out.println(endOfWeek);
+		try {
+
+			Statement stmt = myConn.createStatement();
+			String queryString = "SELECT tripnumber, date, scheduledstarttime, scheduledarrivaltime, drivername, busid\r\n" + 
+					"FROM tripoffering\r\n" + 
+					"WHERE drivername = '"+DriverName+"' AND date BETWEEN '"+Date+"' AND '" + endOfWeek +"';";
+			
+//			System.out.println(queryString);
+			ResultSet rs = stmt.executeQuery(queryString);
+			ResultSetMetaData rsMeta = rs.getMetaData();
+			
+			// Display column names as string
+			String varColNames = "";
+			int varColCount = rsMeta.getColumnCount();
+			for(int col = 1; col <= varColCount; col++) {
+				varColNames = varColNames + rsMeta.getColumnName(col) + " | ";
+			}
+			System.out.println(varColNames);
+			
+			// Display column values
+			while(rs.next()) {
+				for(int col = 1; col <= varColCount; col++) {
+					System.out.print(rs.getString(col) + "         ");
+				}
+				System.out.println("");
+			}
+			
+			// Clean up
+			rs.close();
+			stmt.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 	static void addDriver() {
 		
@@ -426,7 +470,7 @@ public class transitDatabase {
 			System.out.println(queryString);
 			ResultSet rs = stmt.executeQuery(queryString);
 			while (!rs.next()) {
-			// If get here, there is duplicate //data
+			// If get here, there is no data
 				System.out.println("Data does not exist. No changes made");    
 			rs.close();	
 			stmt.close();
@@ -438,7 +482,7 @@ public class transitDatabase {
 			System.out.println(deleteString);
 			int result = stmt.executeUpdate(deleteString) ; 
 			if (result == 0)
-				System.out.println("Problem with insert") ;
+				System.out.println("Problem with delete") ;
 			
 			rs.close ();
 			stmt.close ();
