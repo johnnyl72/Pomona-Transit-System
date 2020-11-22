@@ -219,7 +219,7 @@ public class transitDatabase {
 		String Date = kb.nextLine();
 		System.out.print("Insert ScheduledStartTime: ");
 		String ScheduledStartTime = kb.nextLine();
-		System.out.print("Insert updated DriverName: ");
+		System.out.print("Insert Updated DriverName: ");
 		String DriverName = kb.nextLine();
 		try {
 			
@@ -227,7 +227,7 @@ public class transitDatabase {
 			String queryString = "SELECT TripNumber, Date, ScheduledStartTime " +
 								 "FROM TripOffering " +
 								 "WHERE TripNumber = \'" + TripNumber + "\' AND Date = \'" + Date + "\' AND ScheduledStartTime = \'" + ScheduledStartTime + "\';";
-			System.out.println(queryString);
+//			System.out.println(queryString);
 			ResultSet rs = stmt.executeQuery(queryString);
 			while (!rs.next()) {
 			// If get here, there is no data
@@ -239,7 +239,7 @@ public class transitDatabase {
 			// OK to update new data
 			String updateString = "UPDATE `tripoffering` SET `DriverName` = '" + DriverName + "' " + 
 					"WHERE (`TripNumber` = '" +TripNumber+ "') and (`Date` = '" +Date+ "') and (`ScheduledStartTime` = '"+ScheduledStartTime+"');";  
-			System.out.println(updateString);
+//			System.out.println(updateString);
 			int result = stmt.executeUpdate(updateString) ; 
 			if (result == 0)
 				System.out.println("Problem with update") ;
@@ -431,7 +431,7 @@ public class transitDatabase {
 			String queryString = "SELECT BusID " +
 								 "FROM Bus " +
 								 "WHERE BusID = \'" + BusID +"\';";
-			System.out.println(queryString);
+//			System.out.println(queryString);
 			ResultSet rs = stmt.executeQuery(queryString);
 			while (rs.next()) {
 			// If get here, there is duplicate //data
@@ -444,7 +444,7 @@ public class transitDatabase {
 			String insertString = "INSERT INTO `bus` (`BusID`, `Model`, `Year`)" + 
 								  "VALUES ('" + BusID + "', '" + Model + "', '" + Year + "');";
 
-			System.out.println(insertString);
+//			System.out.println(insertString);
 			int result = stmt.executeUpdate(insertString) ; 
 			if (result == 0)
 				System.out.println("Problem with insert") ;
@@ -467,7 +467,7 @@ public class transitDatabase {
 			String queryString = "SELECT BusID " +
 								 "FROM Bus " +
 								 "WHERE BusID = \'" + BusID +"\';";
-			System.out.println(queryString);
+//			System.out.println(queryString);
 			ResultSet rs = stmt.executeQuery(queryString);
 			while (!rs.next()) {
 			// If get here, there is no data
@@ -479,7 +479,7 @@ public class transitDatabase {
 			// OK to delete new data
 			String deleteString = "DELETE FROM `bus` WHERE (`BusID` = '" + BusID + "');";
 
-			System.out.println(deleteString);
+//			System.out.println(deleteString);
 			int result = stmt.executeUpdate(deleteString) ; 
 			if (result == 0)
 				System.out.println("Problem with delete") ;
